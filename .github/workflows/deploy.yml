@@ -35,4 +35,5 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-website:latest
             docker rm -f myapp 2>/dev/null || true
+            docker stop $(docker ps -q --filter publish=80) 2>/dev/null || true
             docker run -d -p 80:3000 --name myapp ${{ secrets.DOCKER_USERNAME }}/my-website:latest
