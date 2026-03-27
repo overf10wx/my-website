@@ -1,0 +1,28 @@
+name: Deploy Node.js Docker App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup SSH key
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no root@178.18.251.101 '
+        cd ~/my-website &&
+        docker rm -f myapp 2>/dev/null || true &&
+        docker build -t myapp . &&
+        docker run -d -p 80:3000 --name myapp myapp
+        '
